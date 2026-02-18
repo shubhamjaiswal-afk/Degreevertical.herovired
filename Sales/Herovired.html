@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeroVired Degree Inside Sales</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --blue-grey-dark: #263238;
+            --blue-grey-med: #455a64;
+            --blue-highlight: #00bcd4; /* Cyan/Blue pop */
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #eceff1;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            /* Blue-Grey Gradient Background */
+            background: linear-gradient(135deg, #1c2329 0%, #37474f 50%, #263238 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding-top: 30px;
+        }
+
+        .brand-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--blue-highlight);
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            color: #b0bec5;
+            text-align: left;
+            font-size: 1.1rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-left-color: var(--blue-highlight);
+        }
+
+        .nav-btn i { width: 30px; text-align: center; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .page-header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #fff, #90a4ae);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Hierarchy Tree (Blue Grey Graphics) --- */
+        .tree ul {
+            padding-top: 20px; position: relative;
+            display: flex; justify-content: center;
+        }
+        .tree li {
+            float: left; text-align: center; list-style-type: none;
+            position: relative; padding: 20px 5px 0 5px;
+        }
+        /* Connectors (Grey) */
+        .tree li::before, .tree li::after{
+            content: ''; position: absolute; top: 0; right: 50%;
+            border-top: 1px solid #78909c; width: 50%; height: 20px;
+        }
+        .tree li::after{ right: auto; left: 50%; border-left: 1px solid #78909c; }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child{ padding-top: 0;}
+        .tree li:first-child::before, .tree li:last-child::after{ border: 0 none; }
+        .tree li:last-child::before{ border-right: 1px solid #78909c; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after{ border-radius: 5px 0 0 0; }
+        .tree ul ul::before{ content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid #78909c; width: 0; height: 20px; }
+
+        /* Node Styling */
+        .node-wrapper {
+            display: inline-block;
+            background: rgba(38, 50, 56, 0.8);
+            border: 1px solid var(--blue-highlight);
+            border-radius: 12px;
+            padding: 10px;
+            min-width: 110px;
+            transition: transform 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .node-wrapper:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(0, 188, 212, 0.3); }
+
+        .node-img {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            margin-bottom: 5px;
+            object-fit: cover;
+        }
+
+        .node-name { font-size: 0.85rem; font-weight: 700; color: #fff; }
+        .node-role { font-size: 0.7rem; color: #b0bec5; text-transform: uppercase; }
+        .node-badge { 
+            position: absolute; top: -5px; right: -5px; 
+            font-size: 14px; background: #263238; border-radius: 50%; 
+        }
+
+        /* --- BDE List (Manual Scroll) --- */
+        .bde-container {
+            height: 65vh;
+            overflow-y: auto; /* Manual Scroll */
+            padding-right: 10px;
+        }
+        
+        /* Custom Scrollbar */
+        .bde-container::-webkit-scrollbar { width: 6px; }
+        .bde-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .bde-container::-webkit-scrollbar-thumb { background: var(--blue-highlight); border-radius: 3px; }
+
+        .bde-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 5px;
+            border-radius: 6px;
+        }
+        .bde-row:hover { background: rgba(0, 188, 212, 0.1); }
+
+        .page-section { display: none; animation: fadeIn 0.5s; }
+        .page-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        /* Mobile Fix */
+        @media(max-width:768px){ 
+            .sidebar{width:0; padding:0; overflow:hidden;} 
+            .main-content{margin-left:0;}
+            .tree{overflow-x:scroll; justify-content: start;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand-title">HeroVired</div>
+        <button class="nav-btn active" onclick="nav('home')"><i class="fas fa-sitemap"></i> Organization</button>
+        <button class="nav-btn" onclick="nav('manager')"><i class="fas fa-chart-line"></i> Manager Stats</button>
+        <button class="nav-btn" onclick="nav('tl')"><i class="fas fa-users"></i> TL Performance</button>
+        <button class="nav-btn" onclick="nav('university')"><i class="fas fa-university"></i> University Data</button>
+        <button class="nav-btn" onclick="nav('bde')"><i class="fas fa-list-ol"></i> BDE Leaderboard</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h1>Herovired Degree Inside Sales</h1>
+                <p class="text-secondary mb-0">Associate Director: Ranadeep Jung | Date: Feb 18, 2026</p>
+            </div>
+            <!-- One time celebration on load handled by JS -->
+        </div>
+
+        <!-- PAGE 1: HIERARCHY (ORG STRUCTURE) -->
+        <div id="page-home" class="page-section active">
+            <div class="glass-panel" style="min-height: 700px; overflow-x: auto;">
+                <h4 class="text-center mb-4" style="color: var(--blue-highlight); letter-spacing: 2px;">ORGANIZATION STRUCTURE</h4>
+                <div class="tree">
+                    <ul>
+                        <li>
+                            <div class="node-wrapper" style="border-color: #fff;">
+                                <img src="Ranadeep.jpg" class="node-img">
+                                <div class="node-name">Ranadeep Jung</div>
+                                <div class="node-role">Head of Vertical</div>
+                            </div>
+                            <ul>
+                                <!-- Avinash -->
+                                <li>
+                                    <div class="node-wrapper">
+                                        <div class="node-badge">⭐</div>
+                                        <img src="Avinash.jpeg" class="node-img">
+                                        <div class="node-name">Avinash Kumar</div>
+                                        <div class="node-role">Sr. Manager</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="Rohit.jpeg" class="node-img">
+                                                <div class="node-name">Rohith</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <img src="Divya.png" class="node-img">
+                                                <div class="node-name">Divya</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="Kartik.png" class="node-img">
+                                                <div class="node-name">Kartik</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+<li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="Smriti.jpeg" class="node-img">
+                                                <div class="node-name">Smirti</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+
+
+
+
+
+
+
+
+                                    </ul>
+                                </li>
+                                <!-- Karan -->
+                                <li>
+                                    <div class="node-wrapper">
+                                        <div class="node-badge">⭐</div>
+                                        <img src="Karan.jpeg" class="node-img">
+                                        <div class="node-name">Karan Mehta</div>
+                                        <div class="node-role">Manager</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="Amartya.png" class="node-img">
+                                                <div class="node-name">Amartya</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="salony.jpeg" class="node-img">
+                                                <div class="node-name">Salony</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+<li>
+                                            <div class="node-wrapper">
+                                                <div class="node-badge">🏆</div>
+                                                <img src="Pushpender.png" class="node-img">
+                                                <div class="node-name">Pushpender</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+
+
+
+
+                                    </ul>
+                                </li>
+                                <!-- Narender -->
+                                <li>
+                                    <div class="node-wrapper">
+                                        <img src="Narender.jpeg" class="node-img">
+                                        <div class="node-name">Narender</div>
+                                        <div class="node-role">Manager</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <img src="Muskan.jpeg" class="node-img">
+                                                <div class="node-name">Muskan</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+<li>
+                                            <div class="node-wrapper">
+                                                <img src="Prakash.jpeg" class="node-img">
+                                                <div class="node-name">Prakash</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+
+
+
+
+
+
+                                    </ul>
+                                </li>
+                                <!-- Anshul -->
+                                <li>
+                                    <div class="node-wrapper">
+                                        <img src="Anshul.jpeg" class="node-img">
+                                        <div class="node-name">Anshul</div>
+                                        <div class="node-role">Manager</div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div class="node-wrapper">
+                                                <img src="Manisha.png" class="node-img">
+                                                <div class="node-name">Manisha</div>
+                                                <div class="node-role">TL</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!-- Mudit -->
+                                <li>
+                                    <div class="node-wrapper">
+                                        <img src="Mudit.png" class="node-img">
+                                        <div class="node-name">Mudit</div>
+                                        <div class="node-role">Manager</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: MANAGERS -->
+        <div id="page-manager" class="page-section">
+            <div class="glass-panel">
+                <h4 class="mb-4">Manager Performance</h4>
+                <div class="row">
+                    <div class="col-md-8">
+                        <canvas id="mgrChart" height="150"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped text-small">
+                                <thead><tr><th>Name</th><th>HC</th><th>Tgt</th><th>Ach</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Karan ⭐</td><td>20</td><td>193</td><td class="text-info">84</td></tr>
+                                    <tr><td>Avinash ⭐</td><td>23</td><td>208</td><td class="text-info">82</td></tr>
+                                    <tr><td>Narender</td><td>18</td><td>165</td><td>32</td></tr>
+                                    <tr><td>Anshul</td><td>17</td><td>136</td><td>24</td></tr>
+                                    <tr><td>Mudit</td><td>13</td><td>114</td><td>13</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: TL PERFORMANCE -->
+        <div id="page-tl" class="page-section">
+            <div class="glass-panel">
+                <h4 class="mb-4">Team Leader Slab Targets</h4>
+                <div class="row" id="tl-grid">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: UNIVERSITY -->
+        <div id="page-university" class="page-section">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="glass-panel">
+                        <h5 class="text-info">Feb 2026 Distribution</h5>
+                        <canvas id="uniChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-panel">
+                        <h5 class="text-info">Annual Share (1,934 Total)</h5>
+                        <ul class="list-group list-group-flush bg-transparent">
+                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between"><span>Shoolini</span> <span>543</span></li>
+                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between"><span>Galgotias</span> <span>487</span></li>
+                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between"><span>Manipal</span> <span>243</span></li>
+                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between"><span>Amity</span> <span>230</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: BDE LEADERBOARD -->
+        <div id="page-bde" class="page-section">
+            <div class="glass-panel">
+                <div class="d-flex justify-content-between mb-3 border-bottom border-secondary pb-2">
+                    <h4>BDE Leaderboard</h4>
+                    <span class="badge bg-info text-dark">Feb 2026</span>
+                </div>
+                <!-- Manual Scroll Container -->
+                <div class="bde-container" id="bde-list">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // --- 1. Navigation ---
+        function nav(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('page-' + pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- 2. Data ---
+        const bdes = [
+            {n:"Bipin Jaiswal", s:14.5}, {n:"Salony Purohit", s:8}, {n:"Shubham Rawat", s:7.25}, {n:"Ayush Rathore", s:7},
+            {n:"Hradyesh Mishra", s:7}, {n:"Archit Singh", s:6.75}, {n:"Sonam Sinha", s:6.5}, {n:"Vaibhav Sharma1", s:6.5},
+            {n:"Stuti Gupta", s:6.25}, {n:"Ruchika", s:5.75}, {n:"Ranjan Bhakuni", s:5.5}, {n:"Nishant Kumar1", s:5},
+            {n:"Kartikey Chaurasiya", s:5}, {n:"Fatima Ali", s:4.5}, {n:"Vasu Narang", s:4.5}, {n:"Yuvraj Setia", s:4.5},
+            {n:"Shivam Sasane", s:4.5}, {n:"M. Shivamani", s:4.5}, {n:"Rhythm Gandhi", s:4.25}, {n:"Pushkar", s:4.25},
+            {n:"Kunal Patel", s:4.25}, {n:"Sardar Simran", s:4.25}, {n:"Om Jaiswal", s:4}, {n:"Sneha Yadav", s:4},
+            {n:"Anubrata Chanda", s:4}, {n:"Amogh Saxena", s:4}, {n:"Pavithra BR", s:3.5}, {n:"Bhawana Kanwal", s:3.5},
+            {n:"Tanzim Azad", s:3.25}, {n:"Sachin", s:3}, {n:"Anushka Mahajan", s:3}, {n:"Shubham Kulkarni", s:3},
+            {n:"Shivani Kalambe", s:3}, {n:"Harsh Mehra", s:3}, {n:"Ekta Warhade", s:3}, {n:"Bharati Sawaikar", s:3},
+            {n:"Mayuri Navale", s:3}, {n:"Azad", s:2.75}, {n:"Abhishek Mishra2", s:2.75}, {n:"Manish Sharma", s:2.75},
+            {n:"Vidhi Chauhan", s:2.5}, {n:"Garima Verma", s:2.5}, {n:"Tushar Sharma", s:2.5}, {n:"Vivek Raj", s:2.5},
+            {n:"Shubhanshu Srivastava", s:2.5}, {n:"James", s:2.5}, {n:"Mohammad Tariq", s:2.5}, {n:"Smriti Goyal", s:2.25},
+            {n:"Mohammed Shoib", s:2.25}, {n:"Pratham Meena", s:2}, {n:"Dileep Verma", s:2}, {n:"Akhil Mishra", s:2},
+            {n:"Aman Kumar", s:1.75}, {n:"Rahul Saluja", s:1.75}, {n:"Komal Atram", s:1.5}, {n:"Srinivas Shivanand", s:1.5},
+            {n:"Harshitha B", s:1.5}, {n:"Shivani Singh", s:1.5}, {n:"Suhani Gautam", s:1.5}, {n:"Samiksha Mishra", s:1.5},
+            {n:"Tushar Saxena", s:1.5}, {n:"Lovekush Kushwaha", s:1.25}, {n:"Momin Rafiya", s:1}, {n:"Shivam Srivastava", s:1},
+            {n:"Muskan Gaba", s:1}, {n:"Gaurav Sharma2", s:1}, {n:"Shubham Yadav1", s:1}, {n:"Anas H", s:0.75},
+            {n:"Sanskar Dua", s:0.75}, {n:"Simran Kumari", s:0.5}, {n:"Deepshikha Anuragi2", s:0.5}, {n:"Shivika Pal", s:0.5},
+            {n:"Prakash Rathore", s:0.5}, {n:"Anuj Pachouri", s:0.5}, {n:"Deepak Kumar", s:0.5}, {n:"Anuradha Sharma", s:0.5}
+        ];
+
+        const tls = [
+            {n:"Rohith", t:63, a:31, top:true}, {n:"Pushpendra", t:81, a:31, top:true}, {n:"Amartya", t:78, a:29, top:true},
+            {n:"Salony", t:37, a:24, top:true}, {n:"Kartik", t:54, a:21, top:true}, {n:"Divya", t:52, a:20},
+            {n:"Muskan", t:73, a:18}, {n:"Manisha", t:54, a:12}, {n:"Smriti", t:39, a:10}, {n:"Prakash", t:59, a:6}
+        ];
+
+        // --- 3. Render ---
+        window.onload = function() {
+            // One-time confetti
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#00bcd4', '#ffffff', '#b0bec5'] });
+
+            // Render BDEs
+            const bdeDiv = document.getElementById('bde-list');
+            bdes.forEach((b, i) => {
+                bdeDiv.innerHTML += `
+                    <div class="bde-row">
+                        <div style="display:flex; align-items:center;">
+                            <span style="width:30px; font-weight:bold; color:${i<3?'#00bcd4':'#78909c'}">#${i+1}</span>
+                            <span class="text-white">${b.n}</span>
+                        </div>
+                        <span class="badge bg-secondary">${b.s}</span>
+                    </div>
+                `;
+            });
+
+            // Render TLs
+            const tlGrid = document.getElementById('tl-grid');
+            tls.forEach(t => {
+                tlGrid.innerHTML += `
+                    <div class="col-md-6 mb-3">
+                        <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold text-white">${t.top ? '🏆':''} ${t.n}</span>
+                                <span class="text-info">${t.a} / ${t.t}</span>
+                            </div>
+                            <div class="progress" style="height:5px; background:#37474f;">
+                                <div class="progress-bar bg-info" style="width:${(t.a/t.t)*100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Chart Colors
+            Chart.defaults.color = '#b0bec5';
+            Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+
+            // Manager Chart
+            new Chart(document.getElementById('mgrChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Avinash', 'Karan', 'Narender', 'Anshul', 'Mudit'],
+                    datasets: [{
+                        label: 'Achievement',
+                        data: [82, 84, 32, 24, 13],
+                        backgroundColor: '#00bcd4',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            // Uni Chart
+            new Chart(document.getElementById('uniChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Galgotias', 'Sik. Manipal', 'Manipal', 'Shoolini', 'Bharati'],
+                    datasets: [{
+                        label: 'Enrollments',
+                        data: [60, 37, 29, 27, 22],
+                        backgroundColor: ['#263238', '#37474f', '#455a64', '#546e7a', '#78909c'],
+                        borderColor: '#00bcd4',
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y' }
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
